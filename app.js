@@ -73,7 +73,7 @@ function mainMenu(person, people) {
       //! TODO #2: Declare a findPersonFamily function //////////////////////////////////////////
       // HINT: Look for a people-collection stringifier utility function to help
       let personFamily = findPersonFamily(person[0], people);
-      alert(personFamily);
+      displayPeople(personFamily);
       break;
     case "descendants":
       //! TODO #3: Declare a findPersonDescendants function //////////////////////////////////////////
@@ -140,7 +140,6 @@ function displayPeople(people) {
 function displayPerson(person) {
   let personInfo = `First Name: ${person.firstName}\n`;
   personInfo += `Last Name: ${person.lastName}\n`;
-  //! TODO #1a: finish getting the rest of the information to display //////////////////////////////////////////
   personInfo += `Gender: ${person.gender}\n`;
   personInfo += `DOB: ${person.dob}\n`;
   personInfo += `Height: ${person.height} in.\n`;
@@ -157,28 +156,34 @@ function displayPerson(person) {
  * @param {Array} people
  */
 function findPersonFamily(person, people) {
+  let family = [];
   if (person.currentSpouse) {
     var spouse = people.filter((el) => {
       return el.id === person.currentSpouse;
     });
+    family.push(spouse);
   }
 
   if (person.parents) {
     var parents = people.filter((el) => {
       return person.parents.includes(el.id);
     });
+    family.push(...parents);
   }
 
-  //   var siblings = people.filter((el) => {
-  //     let personParent;
-  //     for (personParent in person.parents) {
-  //       if (el.parents.includes(personParent)) {
-  //         return true;
-  //       }
-  //     }
-  //   });
+  var siblings = people.filter((el) => {
+    let i;
+    for (i in person.parents) {
+      if (el.parents.includes(person.parents[i]) && el !== person) {
+        return true;
+      }
+    }
+  });
+  family.push(...siblings);
 
-  console.log(siblings);
+  
+  // console.log(siblings);
+  return family;
 }
 // End of findPersonFamily()
 /**
