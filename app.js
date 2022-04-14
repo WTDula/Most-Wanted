@@ -180,12 +180,20 @@ function findPersonFamily(person, people) {
     }
   });
   family.push(...siblings);
-
-  
-  // console.log(siblings);
   return family;
 }
 // End of findPersonFamily()
+
+function findPersonDescendants(person, people){
+  let children = people.filter((el) => {//children contains objects that have person's id as a parent
+    return el.parents.includes(person.id)
+  })
+
+  if(children){
+    
+  }
+}
+
 /**
  * This function's purpose is twofold:
  * First, to generate a prompt with the value passed in to the question parameter.
