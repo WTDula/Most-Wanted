@@ -116,17 +116,20 @@ function searchByName(people) {
 }
 // End of searchByName()
 
-function searchByTraits(people){
-  let traitSearchType = promptFor("Do you want to search usig a single trait? Please type 'yes' or 'no'",
-  yesNo).toLowerCase();
+function searchByTraits(people) {
+  let traitSearchType = promptFor(
+    "Do you want to search usig a single trait? Please type 'yes' or 'no'",
+    yesNo
+  ).toLowerCase();
   let traitSearchResults;
-  switch(traitSearchType){
-    case 'yes':
+  switch (traitSearchType) {
+    case "yes":
       traitSearchResults = searchBySingleTrait(people);
       displayPeople(traitSearchResults);
       break;
-    case 'no':
+    case "no":
       traitSearchResults = searchByMultipleTraits(people);
+      displayPeople(traitSearchResults);
       break;
     default:
       searchByTraits(people);
@@ -134,13 +137,45 @@ function searchByTraits(people){
   }
 }
 
-function searchBySingleTrait(people){
-  var trait = promptFor("Please enter the trait you wish to search with: \nOptions:\ngender\ndob\nheight\nweight\neyecolor\noccupation", chars);
+function searchBySingleTrait(people) {
+  var trait = promptFor(
+    "Please enter the trait you wish to search with: \nOptions:\ngender\ndob\nheight\nweight\neyecolor\noccupation",
+    chars
+  );
   let traitValue = promptFor(`Please enter the ${trait}: `, chars);
-  let traitSearch = people.filter((el) => {
-    return el[trait] == traitValue;
-  })
-  return traitSearch;
+
+  return filterBySingleTrait(people, trait, traitValue);
+}
+
+function filterBySingleTrait(people, traitKey, traitValue) {
+  return people.filter((el) => {
+    return el[traitKey] == traitValue;
+  });
+}
+
+function searchByMultipleTraits(people) {
+  let traits = promptFor(
+    "Please enter the traits you wish to search with (separated by commas): \nOptions:\ngender\ndob\nheight\nweight\neyecolor\noccupation",
+    chars
+  )
+    .toLowerCase()
+    .trim()
+    .split(",");
+  let traitValues = [];
+  for (let trait of traits) {
+    let value = promptFor(`Please enter the ${trait}: `, chars);
+    traitValues.push(value);
+  }
+
+  //   filter list of people to match gender
+  //  filter list of people with gender to match height
+  //  filter list of people with gender, height to match weight
+
+  let temp = people;
+  for (let i = 0; i < traits.length; i++) {
+    temp = filterBySingleTrait(temp, traits[i], traitValues[i]);
+  }
+  return temp;
 }
 
 /**
