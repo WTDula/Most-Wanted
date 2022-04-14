@@ -147,11 +147,40 @@ function displayPerson(person) {
   personInfo += `Weight: ${person.weight} lb.\n`;
   personInfo += `Eye Color: ${person.eyeColor}\n`;
   personInfo += `Occupation: ${person.occupation}\n`;
-  //   personInfo += `Spouse: ${displayPerson(person.currentSpouse)}\n`; ??
-  alert(personInfo);
+  return personInfo;
 }
 // End of displayPerson()
 
+/**
+ *
+ * @param {Object} person
+ * @param {Array} people
+ */
+function findPersonFamily(person, people) {
+  if (person.currentSpouse) {
+    var spouse = people.filter((el) => {
+      return el.id === person.currentSpouse;
+    });
+  }
+
+  if (person.parents) {
+    var parents = people.filter((el) => {
+      return person.parents.includes(el.id);
+    });
+  }
+
+  //   var siblings = people.filter((el) => {
+  //     let personParent;
+  //     for (personParent in person.parents) {
+  //       if (el.parents.includes(personParent)) {
+  //         return true;
+  //       }
+  //     }
+  //   });
+
+  console.log(siblings);
+}
+// End of findPersonFamily()
 /**
  * This function's purpose is twofold:
  * First, to generate a prompt with the value passed in to the question parameter.
