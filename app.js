@@ -31,6 +31,7 @@ function app(people) {
     case "no":
       //! TODO #4: Declare a searchByTraits (multiple traits) function //////////////////////////////////////////
       //! TODO #4a: Provide option to search for single or multiple //////////////////////////////////////////
+
       searchResults = searchByTraits(people);
       break;
     default:
@@ -114,6 +115,33 @@ function searchByName(people) {
   return foundPerson;
 }
 // End of searchByName()
+
+function searchByTraits(people){
+  let traitSearchType = promptFor("Do you want to search usig a single trait? Please type 'yes' or 'no'",
+  yesNo).toLowerCase();
+  let traitSearchResults;
+  switch(traitSearchType){
+    case 'yes':
+      traitSearchResults = searchBySingleTrait(people);
+      displayPeople(traitSearchResults);
+      break;
+    case 'no':
+      traitSearchResults = searchByMultipleTraits(people);
+      break;
+    default:
+      searchByTraits(people);
+      break;
+  }
+}
+
+function searchBySingleTrait(people){
+  var trait = promptFor("Please enter the trait you wish to search with: \nOptions:\ngender\ndob\nheight\nweight\neyecolor\noccupation", chars);
+  let traitValue = promptFor(`Please enter the ${trait}: `, chars);
+  let traitSearch = people.filter((el) => {
+    return el[trait] == traitValue;
+  })
+  return traitSearch;
+}
 
 /**
  * This function will be useful for STRINGIFYING a collection of person-objects
