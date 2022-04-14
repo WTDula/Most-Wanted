@@ -121,20 +121,22 @@ function searchByTraits(people) {
     "Do you want to search usig a single trait? Please type 'yes' or 'no'",
     yesNo
   ).toLowerCase();
-  let traitSearchResults;
+  let traitSearchResults, personFound;
   switch (traitSearchType) {
     case "yes":
       traitSearchResults = searchBySingleTrait(people);
-      displayPeople(traitSearchResults);
+      //displayPeople(traitSearchResults);
+      personFound = searchConfirmation(traitSearchResults, people);
       break;
     case "no":
       traitSearchResults = searchByMultipleTraits(people);
-      displayPeople(traitSearchResults);
+      personFound = searchConfirmation(traitSearchResults, people)
       break;
     default:
       searchByTraits(people);
       break;
   }
+  mainMenu(personFound, people)
 }
 
 function searchBySingleTrait(people) {
@@ -176,6 +178,22 @@ function searchByMultipleTraits(people) {
     temp = filterBySingleTrait(temp, traits[i], traitValues[i]);
   }
   return temp;
+}
+
+function searchConfirmation(results, people){
+  //to ask if user sees the person they are searching for.
+  //if so, select them so that person can be passed to mainmenu
+  displayPeople(results);
+  let foundPerson = promptFor("Did you see the person you were searching for? 'yes' or 'no'", yesNo);
+  if(foundPerson === "yes"){
+    return searchByName(people);
+  }
+  else{
+    return searchByTraits(people);
+  }
+
+
+  //let userResponse = promptFor("Please enter the name of the person you were searching for: ", chars);
 }
 
 /**
