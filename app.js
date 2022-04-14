@@ -103,8 +103,8 @@ function mainMenu(person, people) {
  * @returns {Array}             An array containing the person-object (or empty array if no match)
  */
 function searchByName(people) {
-  let firstName = promptFor("What is the person's first name?", chars);
-  let lastName = promptFor("What is the person's last name?", chars);
+  let firstName = promptFor("What is the person's first name?", charsName);
+  let lastName = promptFor("What is the person's last name?", charsName);
 
   // The foundPerson value will be of type Array. Recall that .filter() ALWAYS returns an array.
   let foundPerson = people.filter(function (person) {
@@ -315,10 +315,15 @@ function yesNo(input) {
  * @param {String} input        A string.
  * @returns {Boolean}           Default validation -- no logic yet.
  */
-function chars(input) {
-  return true; // Default validation only
+function chars(input) {//searchByMultipleTraits, searchBySingleTrait, searchByName
+  input = input.toLowerCase();
+  return (input === "gender" || input === "dob" || input === "height" || input === "weight" || input === "eyecolor" || input === "occupation");
 }
 // End of chars()
+
+function charsName(input){
+  return typeof input === "string";
+}
 
 //////////////////////////////////////////* End Of Starter Code *//////////////////////////////////////////
 // Any additional functions can be written below this line 👇. Happy Coding! 😁
