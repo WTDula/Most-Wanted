@@ -80,7 +80,7 @@ function mainMenu(person, people) {
       //! TODO #3: Declare a findPersonDescendants function //////////////////////////////////////////
       // HINT: Review recursion lecture + demo for bonus user story
       let personDescendants = findPersonDescendants(person[0], people);
-      displayPeople(personDescendants);
+      displayDescendants(personDescendants);
       break;
     case "restart":
       // Restart app() from the very beginning
@@ -215,6 +215,12 @@ function displayFamily(family) {
     `Spouse:\n${family.spouse}\n\nParents:\n${family.parents} \n\nSiblings:\n${family.siblings}`
   );
 }
+
+function displayDescendants(descendants){
+  alert(
+    `Children:\n${descendants.children}\n\nGrandchildren:\n${descendants.grandchildren}`
+  );
+}
 /**
  * This function will be useful for STRINGIFYING a person-object's properties
  * in order to easily send the information to the user in the form of an alert().
@@ -276,18 +282,27 @@ function findPersonFamily(person, people) {
 }
 // End of findPersonFamily()
 
-function findPersonDescendants(person, people) {
-  let descendants = [];
+function findPersonDescendants(person, people, level = 1) {
+  let descendants = {
+    'children': `${person.firstName} has no children`,
+    'grandchildren': `${person.firstName} has no grandchildren`
+  };
 
   let children = people.filter((el) => {
     //children contains objects that have person's id as a parent
     return el.parents.includes(person.id);
   });
-  descendants.push(...children);
 
   if (children.length > 0) {
+    if(level === 1){
+      descendants['children'] = getNameListString(children);
+    }
+    else if(level === 2){
+      descendants['grandchildren'] = getNameListString(children);
+    }
+    level++;
     for (let child of children) {
-      descendants.push(...findPersonDescendants(child, people));
+      findPersonDescendants(child, people, level);
     }
   } else {
     return descendants;
