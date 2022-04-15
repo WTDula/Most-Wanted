@@ -103,8 +103,8 @@ function mainMenu(person, people) {
  * @returns {Array}             An array containing the person-object (or empty array if no match)
  */
 function searchByName(people) {
-  let firstName = promptFor("What is the person's first name?", charsName);
-  let lastName = promptFor("What is the person's last name?", charsName);
+  let firstName = promptFor("What is the person's first name?", alphabetic);
+  let lastName = promptFor("What is the person's last name?", alphabetic);
 
   // The foundPerson value will be of type Array. Recall that .filter() ALWAYS returns an array.
   let foundPerson = people.filter(function (person) {
@@ -136,15 +136,15 @@ function searchByTraits(people) {
       searchByTraits(people);
       break;
   }
-  mainMenu(personFound, people)
+  return personFound;
 }
 
 function searchBySingleTrait(people) {
   var trait = promptFor(
-    "Please enter the trait you wish to search with: \nOptions:\ngender\ndob\nheight\nweight\neyecolor\noccupation",
-    chars
+    `Please enter the trait you wish to search with: \nOptions:\n${Object.keys(people[0]).slice(3,9).join('\n')}`,
+    traitType
   );
-  let traitValue = promptFor(`Please enter the ${trait}: `, chars);
+  let traitValue = promptFor(`Please enter the ${trait}: `, alphabetic);
 
   return filterBySingleTrait(people, trait, traitValue);
 }
@@ -157,15 +157,15 @@ function filterBySingleTrait(people, traitKey, traitValue) {
 
 function searchByMultipleTraits(people) {
   let traits = promptFor(
-    "Please enter the traits you wish to search with (separated by commas): \nOptions:\ngender\ndob\nheight\nweight\neyecolor\noccupation",
-    chars
+    `Please enter the traits you wish to search with (separated by commas): \nOptions:\n${Object.keys(people).slice(3,9).join('\n')}`,
+    traitType
   )
     .toLowerCase()
     .trim()
     .split(",");
   let traitValues = [];
   for (let trait of traits) {
-    let value = promptFor(`Please enter the ${trait}: `, chars);
+    let value = promptFor(`Please enter the ${trait}: `, alphabetic);
     traitValues.push(value);
   }
 
@@ -191,9 +191,6 @@ function searchConfirmation(results, people){
   else{
     return searchByTraits(people);
   }
-
-
-  //let userResponse = promptFor("Please enter the name of the person you were searching for: ", chars);
 }
 
 /**
@@ -315,15 +312,26 @@ function yesNo(input) {
  * @param {String} input        A string.
  * @returns {Boolean}           Default validation -- no logic yet.
  */
-function chars(input) {//searchByMultipleTraits, searchBySingleTrait, searchByName
-  input = input.toLowerCase();
-  return (input === "gender" || input === "dob" || input === "height" || input === "weight" || input === "eyecolor" || input === "occupation");
+function traitType(input) {//searchByMultipleTraits, searchBySingleTrait, searchByName
+  const validTraits = 'gender;dob;height;weight;eyeColor;occupation'.split(';');
+  return validTraits.includes(input);
 }
 // End of chars()
 
-function charsName(input){
-  return typeof input === "string";
+function alphabetic(input){
+  const numbers = "0123456789".split('')
+  const symbols = "!@#$%^&*()_+=-{}|[]\;':\",./<>\?`~".split('')
+
+  for (let char of input) {
+    if (numbers.includes(char) || symbols.includes(char)) return false;
+  }
+  return true;
 }
+
+
+// function traitType(input, people) {
+//   return Object.keys(people).slice(3,9).includes(input)
+// }
 
 //////////////////////////////////////////* End Of Starter Code *//////////////////////////////////////////
 // Any additional functions can be written below this line 👇. Happy Coding! 😁
