@@ -116,83 +116,6 @@ function searchByName(people) {
 }
 // End of searchByName()
 
-function searchByTraits(people) {
-  let traitSearchType = promptFor(
-    "Do you want to search usig a single trait? Please type 'yes' or 'no'",
-    yesNo
-  ).toLowerCase();
-  let traitSearchResults, personFound;
-  switch (traitSearchType) {
-    case "yes":
-      traitSearchResults = searchBySingleTrait(people);
-      //displayPeople(traitSearchResults);
-      personFound = searchConfirmation(traitSearchResults, people);
-      break;
-    case "no":
-      traitSearchResults = searchByMultipleTraits(people);
-      personFound = searchConfirmation(traitSearchResults, people)
-      break;
-    default:
-      searchByTraits(people);
-      break;
-  }
-  return personFound;
-}
-
-function searchBySingleTrait(people) {
-  var trait = promptFor(
-    `Please enter the trait you wish to search with: \nOptions:\n${Object.keys(people[0]).slice(3,9).join('\n')}`,
-    traitType
-  );
-  let traitValue = promptFor(`Please enter the ${trait}: `, alphabetic);
-
-  return filterBySingleTrait(people, trait, traitValue);
-}
-
-function filterBySingleTrait(people, traitKey, traitValue) {
-  return people.filter((el) => {
-    return el[traitKey] == traitValue;
-  });
-}
-
-function searchByMultipleTraits(people) {
-  let traits = promptFor(
-    `Please enter the traits you wish to search with (separated by commas): \nOptions:\n${Object.keys(people).slice(3,9).join('\n')}`,
-    traitType
-  )
-    .toLowerCase()
-    .trim()
-    .split(",");
-  let traitValues = [];
-  for (let trait of traits) {
-    let value = promptFor(`Please enter the ${trait}: `, alphabetic);
-    traitValues.push(value);
-  }
-
-  //   filter list of people to match gender
-  //  filter list of people with gender to match height
-  //  filter list of people with gender, height to match weight
-
-  let temp = people;
-  for (let i = 0; i < traits.length; i++) {
-    temp = filterBySingleTrait(temp, traits[i], traitValues[i]);
-  }
-  return temp;
-}
-
-function searchConfirmation(results, people){
-  //to ask if user sees the person they are searching for.
-  //if so, select them so that person can be passed to mainmenu
-  displayPeople(results);
-  let foundPerson = promptFor("Did you see the person you were searching for? 'yes' or 'no'", yesNo);
-  if(foundPerson === "yes"){
-    return searchByName(people);
-  }
-  else{
-    return searchByTraits(people);
-  }
-}
-
 /**
  * This function will be useful for STRINGIFYING a collection of person-objects
  * first and last name properties in order to easily send the information
@@ -245,11 +168,159 @@ function displayPerson(person) {
 // End of displayPerson()
 
 /**
- *
- * @param {Object} person
- * @param {Array} people
+ * This function's purpose is twofold:
+ * First, to generate a prompt with the value passed in to the question parameter.
+ * Second, to ensure the user input response has been validated.
+ * @param {String} question     A string that will be passed into prompt().
+ * @param {Function} valid      A callback function used to validate basic user input.
+ * @returns {String}            The valid string input retrieved from the user.
  */
-function findPersonFamily(person, people) {
+function promptFor(question, valid) {
+  do {
+    var response = prompt(question).trim();
+  } while (!response || !valid(response));
+  return response;
+}
+// End of promptFor()
+
+/**
+ * This helper function checks to see if the value passed into input is a "yes" or "no."
+ * @param {String} input        A string that will be normalized via .toLowerCase().
+ * @returns {Boolean}           The result of our condition evaluation.
+ */
+function yesNo(input) {
+  return input.toLowerCase() === "yes" || input.toLowerCase() === "no";
+}
+// End of yesNo()
+
+
+//////////////////////////////////////////* End Of Starter Code *//////////////////////////////////////////
+// Any additional functions can be written below this line 👇. Happy Coding! 😁
+
+/**
+ * Return a formatted string of names of people
+ * @param {Array} people  Array of person objects
+ * @returns {String}  String of names separated by newline
+ */
+function getNameListString(people) {
+  return people
+      .map(function (person) {
+        return `${person.firstName} ${person.lastName}`;
+      })
+      .join("\n")
+}
+
+/**
+ * This function is used when searching the people collection by
+ * one or more traits
+ * @param {Array} people        A collection of person objects.
+ * @returns {Array}             An array containing the person-object (or empty array if no match)
+ */
+function searchByTraits(people) {
+  let traitSearchType = promptFor(
+    "Do you want to search usig a single trait? Please type 'yes' or 'no'",
+    yesNo
+  ).toLowerCase();
+  let traitSearchResults, personFound;
+  switch (traitSearchType) {
+    case "yes":
+      traitSearchResults = searchBySingleTrait(people);
+      personFound = searchConfirmation(traitSearchResults, people);
+      break;
+    case "no":
+      traitSearchResults = searchByMultipleTraits(people);
+      personFound = searchConfirmation(traitSearchResults, people)
+      break;
+    default:
+      searchByTraits(people);
+      break;
+  }
+  return personFound;
+}
+
+/**
+ * Prompts user to select a trait and trait value and use it in a search against
+ * all person objects
+ * @param {Array} people   An array of person objects
+ * @returns {Array}    An array of person objects with the specified trait
+ */
+function searchBySingleTrait(people) {
+  var trait = promptFor(
+    `Please enter the trait you wish to search with: \nOptions:\n${Object.keys(people[0]).slice(3,9).join('\n')}`,
+    traitType
+  );
+  let traitValue = promptFor(`Please enter the ${trait}: `, alphabetic);
+
+  return filterBySingleTrait(people, trait, traitValue);
+}
+
+/**
+ * Returns a filtered array of people objects matched against a specified trait value
+ * @param {Array} people        An array of person objects
+ * @param {String} traitKey     Specified trait type
+ * @param {String} traitValue   Specified trait value
+ * @returns {Array}             Array of person objects that match specified trait
+ */
+function filterBySingleTrait(people, traitKey, traitValue) {
+  return people.filter((el) => {
+    return el[traitKey] == traitValue;
+  });
+}
+
+/**
+ * Prompts user to select multiple traits and trait values and uses them in a 
+ * search against collection of person objects.
+ * @param {Array} people  An array of person objects
+ * @returns {Array}       An array of person objects that match specified traits
+ */
+function searchByMultipleTraits(people) {
+  let traits = promptFor(
+    `Please enter the traits you wish to search with (separated by commas): \nOptions:\n${Object.keys(people).slice(3,9).join('\n')}`,
+    traitType
+  )
+    .toLowerCase()
+    .trim()
+    .split(",");
+  let traitValues = [];
+  for (let trait of traits) {
+    let value = promptFor(`Please enter the ${trait}: `, alphabetic);
+    traitValues.push(value);
+  }
+
+  let multipleFilteredSearch = people;
+  for (let i = 0; i < traits.length; i++) {
+    multipleFilteredSearch = filterBySingleTrait(multipleFilteredSearch, traits[i], traitValues[i]);
+  }
+  return multipleFilteredSearch;
+}
+
+/**
+ * Ask user if the result of their trait search matches their target, and redirect them.
+ * @param {Array} results   Array of person objects from previous search
+ * @param {Array} people    Array of all person objects
+ * @returns {Function}
+ */
+function searchConfirmation(results, people){
+  //to ask if user sees the person they are searching for.
+  //if so, select them so that person can be passed to mainmenu
+  displayPeople(results);
+  let foundPerson = promptFor("Did you see the person you were searching for? 'yes' or 'no'", yesNo);
+  if(foundPerson === "yes"){
+    return searchByName(people);
+  }
+  else{
+    return searchByTraits(people);
+  }
+}
+
+
+/**
+ * Compiles list of a person's family (i.e., spouse, parents, siblings)
+ * @param {Object} person   Person object that function finding family members for
+ * @param {Array} people    An array of all person objects
+ * @returns {Object}        Object containing spouse, parents, siblings person objects
+ */
+ function findPersonFamily(person, people) {
   let family = {
     'spouse': `${person.firstName} has no spouse`,
     'parents': `${person.firstName} has no parents`,
@@ -285,8 +356,15 @@ function findPersonFamily(person, people) {
 
   return family;
 }
-// End of findPersonFamily()
 
+/**
+ * Recursively compiles list of a person's children and grandchildren
+ * @param {Object} person       Person object for finding descendants
+ * @param {Array} people        An array of all person objects
+ * @param {Number} level        Generation/Depth of family tree (used in recursion)
+ * @param {Object} descendants  Object containing children and grandchildren person arrays
+ * @returns 
+ */
 function findPersonDescendants(person, people, level = 1, descendants = {}) {
 
   let children = people.filter((el) => {
@@ -308,43 +386,24 @@ function findPersonDescendants(person, people, level = 1, descendants = {}) {
 }
 
 /**
- * This function's purpose is twofold:
- * First, to generate a prompt with the value passed in to the question parameter.
- * Second, to ensure the user input response has been validated.
- * @param {String} question     A string that will be passed into prompt().
- * @param {Function} valid      A callback function used to validate basic user input.
- * @returns {String}            The valid string input retrieved from the user.
+ * Validation function for trait type user input
+ * 
+ * Checks user input against a list of valid trait types
+ * @param {String} input  Trait type user input
+ * @returns {Boolean}
  */
-function promptFor(question, valid) {
-  do {
-    var response = prompt(question).trim();
-  } while (!response || !valid(response));
-  return response;
-}
-// End of promptFor()
-
-/**
- * This helper function checks to see if the value passed into input is a "yes" or "no."
- * @param {String} input        A string that will be normalized via .toLowerCase().
- * @returns {Boolean}           The result of our condition evaluation.
- */
-function yesNo(input) {
-  return input.toLowerCase() === "yes" || input.toLowerCase() === "no";
-}
-// End of yesNo()
-
-/**
- * This helper function operates as a default callback for promptFor's validation.
- * Feel free to modify this to suit your needs.
- * @param {String} input        A string.
- * @returns {Boolean}           Default validation -- no logic yet.
- */
-function traitType(input) {//searchByMultipleTraits, searchBySingleTrait, searchByName
+ function traitType(input) {//searchByMultipleTraits, searchBySingleTrait, searchByName
   const validTraits = 'gender;dob;height;weight;eyeColor;occupation'.split(';');
   return validTraits.includes(input);
 }
-// End of chars()
 
+/**
+ * Validation function for alphabetic input
+ * 
+ * Checks user input against a list of invalid characters.
+ * @param {String} input  User input
+ * @returns {Boolean} 
+ */
 function alphabetic(input){
   const numbers = "0123456789".split('')
   const symbols = "!@#$%^&*()_+=-{}|[]\;':\",./<>\?`~".split('')
@@ -353,20 +412,4 @@ function alphabetic(input){
     if (numbers.includes(char) || symbols.includes(char)) return false;
   }
   return true;
-}
-
-
-// function traitType(input, people) {
-//   return Object.keys(people).slice(3,9).includes(input)
-// }
-
-//////////////////////////////////////////* End Of Starter Code *//////////////////////////////////////////
-// Any additional functions can be written below this line 👇. Happy Coding! 😁
-
-function getNameListString(people) {
-  return people
-      .map(function (person) {
-        return `${person.firstName} ${person.lastName}`;
-      })
-      .join("\n")
 }
