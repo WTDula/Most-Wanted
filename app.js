@@ -74,7 +74,7 @@ function mainMenu(person, people) {
       //! TODO #2: Declare a findPersonFamily function //////////////////////////////////////////
       // HINT: Look for a people-collection stringifier utility function to help
       let personFamily = findPersonFamily(person[0], people);
-      displayPeople(personFamily);
+      displayFamily(personFamily);
       break;
     case "descendants":
       //! TODO #3: Declare a findPersonDescendants function //////////////////////////////////////////
@@ -210,6 +210,11 @@ function displayPeople(people) {
 }
 // End of displayPeople()
 
+function displayFamily(family) {
+  alert(
+    `Spouse:\n${family.spouse}\n\nParents:\n${family.parents} \n\nSiblings:\n${family.siblings}`
+  );
+}
 /**
  * This function will be useful for STRINGIFYING a person-object's properties
  * in order to easily send the information to the user in the form of an alert().
@@ -234,29 +239,39 @@ function displayPerson(person) {
  * @param {Array} people
  */
 function findPersonFamily(person, people) {
-  let family = [];
+  let family = {
+    'spouse': `${person.firstName} has no spouse`,
+    'parents': `${person.firstName} has no parents`,
+    'siblings': `${person.firstName} has no siblings`
+  };
   if (person.currentSpouse) {
-    var spouse = people.filter((el) => {
+    let spouse = people.filter((el) => {
       return el.id === person.currentSpouse;
     });
-    family.push(...spouse);
+    family['spouse'] = getNameListString(spouse);
   }
 
   if (person.parents) {
-    var parents = people.filter((el) => {
+    let parents = people.filter((el) => {
       return person.parents.includes(el.id);
     });
-    family.push(...parents);
+    if (parents.length > 0) {
+      family['parents'] = getNameListString(parents);
+    }
+    
   }
 
-  var siblings = people.filter((el) => {
+  let siblings = people.filter((el) => {
     for (let parent of person.parents) {
       if (el.parents.includes(parent) && el !== person) {
         return true;
       }
     }
   });
-  family.push(...siblings);
+  if (siblings.length > 0) {
+    family['siblings'] = getNameListString(siblings);
+  }
+
   return family;
 }
 // End of findPersonFamily()
@@ -335,3 +350,11 @@ function alphabetic(input){
 
 //////////////////////////////////////////* End Of Starter Code *//////////////////////////////////////////
 // Any additional functions can be written below this line 👇. Happy Coding! 😁
+
+function getNameListString(people) {
+  return people
+      .map(function (person) {
+        return `${person.firstName} ${person.lastName}`;
+      })
+      .join("\n")
+}
