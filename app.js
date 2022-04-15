@@ -217,8 +217,13 @@ function displayFamily(family) {
 }
 
 function displayDescendants(descendants){
+  if (Object.keys(descendants).length < 2) {
+    alert(
+      `Children:\n${descendants[1]}`
+    )
+  }
   alert(
-    `Children:\n${descendants.children}\n\nGrandchildren:\n${descendants.grandchildren}`
+    `Children:\n${descendants[1]}\n\nGrandchildren:\n${descendants[2]}`
   );
 }
 /**
@@ -282,11 +287,7 @@ function findPersonFamily(person, people) {
 }
 // End of findPersonFamily()
 
-function findPersonDescendants(person, people, level = 1) {
-  let descendants = {
-    'children': `${person.firstName} has no children`,
-    'grandchildren': `${person.firstName} has no grandchildren`
-  };
+function findPersonDescendants(person, people, level = 1, descendants = {}) {
 
   let children = people.filter((el) => {
     //children contains objects that have person's id as a parent
@@ -294,18 +295,14 @@ function findPersonDescendants(person, people, level = 1) {
   });
 
   if (children.length > 0) {
-    if(level === 1){
-      descendants['children'] = getNameListString(children);
-    }
-    else if(level === 2){
-      descendants['grandchildren'] = getNameListString(children);
-    }
+    descendants[level] = getNameListString(children)
+
     level++;
     for (let child of children) {
-      findPersonDescendants(child, people, level);
+      descendants = findPersonDescendants(child, people, level, descendants);
     }
   } else {
-    return descendants;
+    descendants[level] = "None"
   }
   return descendants;
 }
